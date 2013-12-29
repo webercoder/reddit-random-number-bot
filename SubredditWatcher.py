@@ -16,7 +16,7 @@ class SubredditWatcher:
 
     def watch(self):
         subreddit = self.praw_reddit.get_subreddit(self.name)
-        util.bot_stdout_print("Getting comments for subreddit: %s" % (subreddit_name))
+        util.bot_stdout_print("Getting comments for subreddit: %s" % (self.name))
         for submission in subreddit.get_comments():
             current_id = 0
             try:
@@ -33,12 +33,12 @@ class SubredditWatcher:
                             except:
                                 self.already_done.append(submission.id)
                                 util.bot_stdout_print("Invalid syntax. Skipped.")
-                                reply_usage(submission)
+                                self.reply_usage(submission)
                                 continue 
                             if x is None or y is None: 
                                 self.already_done.append(submission.id)
                                 util.bot_stdout_print("Invalid syntax. Skipped.")
-                                reply_usage(submission)
+                                self.reply_usage(submission)
                                 continue 
                             util.bot_stdout_print("Found parts: %s, %s, %s" % (user, x, y))
                             try:
@@ -70,20 +70,20 @@ class SubredditWatcher:
                 util.bot_stdout_print("Unknown exception: %s" % sys.exc_info()[0])
                 print traceback.format_exc()
                 self.already_done.append(current_id)
-                reply_usage(submission)
+                self.reply_usage(submission)
                 continue
-        cleanup_already_done()
+        self.cleanup_already_done()
 
     def cleanup_already_done(self):
         # Thought about just removing everything that is not in the current reddit comment list, 
         # but I'm not sure how reddit handles comment deletion. I'd hate for the bot to respond twice.
         # Instead, I'm just going to keep the list at a maximum length. This will at least keep the 
         # bot from consuming too much memory.
-        if len(self.already_done) > MAX_ALREADY_DONE_LENGTH:
-            negative_length = -1 * MAX_ALREADY_DONE_LENGTH
+        if len(self.already_done) > self.MAX_ALREADY_DONE_LENGTH:
+            negative_length = -1 * self.MAX_ALREADY_DONE_LENGTH
             self.already_done = self.already_done[negative_length:]
 
     # Post a reddit comment about proper usage when someone uses this bot incorrectly.
-    def reply_usage(submission):
+    def reply_usage(self, submission):
         reply = "You may be doing something incorrectly. Please enter the following command to use this bot: \"%s x y\" (where x and y are integers)." % self.triggers[0]
         reddit.handle_ratelimit(submission.reply, reply)

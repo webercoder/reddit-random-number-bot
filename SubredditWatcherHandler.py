@@ -1,5 +1,5 @@
 import praw
-import SubredditWatcher
+from SubredditWatcher import SubredditWatcher
 
 class SubredditWatcherHandler:
 
@@ -11,9 +11,9 @@ class SubredditWatcherHandler:
         self.praw_reddit = praw.Reddit(user_agent=user_agent)
         self.praw_reddit.login(username, password)
 
-        self.subredditWatchers = []
+        self.subreddit_watchers = []
         for subreddit_name in subreddits:
-            self.subreddit_watchers.append(SubredditWatcher(subreddit_name), self.praw_reddit, triggers)
+            self.subreddit_watchers.append(SubredditWatcher(subreddit_name, self.praw_reddit, triggers))
 
     def process_subreddits(self):
         for watcher in self.subreddit_watchers:
