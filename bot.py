@@ -5,7 +5,13 @@ import sys
 from ConfigParser import SafeConfigParser
 import traceback
 import codecs
+from datetime import datetime
 from random import SystemRandom
+
+# Stdout Logging
+def bot_stdout_print(msg):
+    curr_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print("%s\t%s" % (curr_time, msg))
 
 # Reddit will sometimes give ratelimit errors. This will delay posting a comment until the wait time is over.
 def handle_ratelimit(func, *args, **kwargs):
@@ -14,7 +20,7 @@ def handle_ratelimit(func, *args, **kwargs):
             func(*args, **kwargs)
             break
         except praw.errors.RateLimitExceeded as error:
-            print("Rate limit exceeded. Sleeping for %d seconds" % (error.sleep_time))
+            bot_stdout_print("Rate limit exceeded. Sleeping for %d seconds" % (error.sleep_time))
             time.sleep(error.sleep_time)
 
 # Get an integer from a specified upper or lower value.
@@ -55,7 +61,7 @@ already_done = [] # keeps track of what comments have been seen so we don't repo
 while True:
     for subreddit_name in subreddits:
         subreddit = r.get_subreddit(subreddit_name)
-        print("Getting comments for subreddit: %s" % (subreddit_name))
+        bot_stdout_print("Getting comments for subreddit: %s" % (subreddit_name))
         for submission in subreddit.get_comments():
             current_id = 0
             try:
@@ -66,28 +72,28 @@ while True:
                     for line in comment_text_lines:
                         if line.startswith(triggers):
                             current_id = submission.id
-                            print("Found line, '%s'" % line)
+                            bot_stdout_print("Found line, '%s'" % line)
                             try:
                                 user,x,y = line.split()
                             except:
                                 already_done.append(submission.id)
-                                print("Invalid syntax. Skipped.")
+                                bot_stdout_print("Invalid syntax. Skipped.")
                                 reply_usage(submission)
                                 continue 
                             if x is None or y is None: 
                                 already_done.append(submission.id)
-                                print("Invalid syntax. Skipped.")
+                                bot_stdout_print("Invalid syntax. Skipped.")
                                 reply_usage(submission)
                                 continue 
-                            print("Found parts: %s, %s, %s" % (user, x, y))
+                            bot_stdout_print("Found parts: %s, %s, %s" % (user, x, y))
                             try:
                                 if not x is None and x.lower() == "moon":
                                     x = 384400 # distance to the moon in kms
                                 if not y is None and y.lower() == "moon":
                                     y = 384400 # distance to the moon in kms
                             except:
-                                print "Error finding moon: ", sys.exc_info()[0]
-                            print "x, y = %s, %s" % (str(x), str(y)) 
+                                bot_stdout_print("Error finding moon: %s" % sys.exc_info()[0])
+                            bot_stdout_print("x, y = %s, %s" % (str(x), str(y)))
                             xInt = num(x)
                             yInt = num(y)
                             if xInt > yInt:
@@ -96,17 +102,17 @@ while True:
                                 yInt = tmpInt
                             randnum = so_random(xInt, yInt)
                             reply = "Random Number between %d and %d is %d." % (xInt, yInt, randnum)
-                            print(reply)
+                            bot_stdout_print(reply)
                             results.append(reply)
                             already_done.append(submission.id)
                             continue
                     if len(results) > 0:
                         reply = "   \n".join(results)
                         results = []
-                        print("Posting comment for %s:\n%s" % (submission.id, reply))
+                        bot_stdout_print("Posting comment for %s:\n%s" % (submission.id, reply))
                         handle_ratelimit(submission.reply, reply)
             except:
-                print "Unknown exception: ", sys.exc_info()[0]
+                bot_stdout_print("Unknown exception: %s" % sys.exc_info()[0])
                 print traceback.format_exc()
                 already_done.append(current_id)
                 reply_usage(submission)
