@@ -1,4 +1,10 @@
-reddit-random-number-bot
-========================
+# Reddit Random Number Bot
 
-Reddit bot that generates random number between x and y.
+## Summary
+
+This bot creates random numbers from two given integers.
+
+## Implementation
+
+Will be completed asap.
+
