@@ -5,7 +5,7 @@ import sys
 from ConfigParser import SafeConfigParser
 import traceback
 import codecs
-from random import randint
+from random import SystemRandom
 
 # Reddit will sometimes give ratelimit errors. This will delay posting a comment until the wait time is over.
 def handle_ratelimit(func, *args, **kwargs):
@@ -23,6 +23,10 @@ def num(val):
         return int(val)
     except ValueError:
         return 1
+
+# Get a random number from the system. It must be within the specified bounds.
+def so_random(x, y):
+    return SystemRandom().randint(x, y)
 
 # Post a reddit comment about proper usage when someone uses this bot incorrectly.
 def reply_usage(submission):
@@ -91,7 +95,7 @@ while True:
                                 tmpInt = xInt
                                 xInt = yInt
                                 yInt = tmpInt
-                            randnum = randint(xInt, yInt)
+                            randnum = so_random(xInt, yInt)
                             reply = "Random Number between %d and %d is %d." % (xInt, yInt, randnum)
                             print(reply)
                             results.append(reply)
@@ -102,7 +106,6 @@ while True:
                         results = []
                         print("Posting comment for %s:\n%s" % (submission.id, reply))
                         handle_ratelimit(submission.reply, reply)
-
             except:
                 print "Unknown exception: ", sys.exc_info()[0]
                 print traceback.format_exc()
