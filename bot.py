@@ -3,22 +3,23 @@ import codecs
 import time
 from ConfigParser import SafeConfigParser
 
-# Parse config file
-parser = SafeConfigParser()
-with codecs.open("bot.ini", "r", encoding="utf-8") as f:
-    parser.readfp(f)
-url = parser.get("General", "url")
-summary = parser.get("General", "summary")
-username = parser.get("General", "reddit_username")
-password = parser.get("General", "reddit_password")
-triggers = tuple(parser.get("General", "triggers").split(","))
-subreddits = tuple(parser.get("General", "subreddits").split(","))
-user_agent = "%s %s" % (summary, url)
+def main():
+    # Parse config file
+    parser = SafeConfigParser()
+    with codecs.open("bot.ini", "r", encoding="utf-8") as f:
+        parser.readfp(f)
+    url = parser.get("General", "url")
+    summary = parser.get("General", "summary")
+    username = parser.get("General", "reddit_username")
+    password = parser.get("General", "reddit_password")
+    triggers = tuple(parser.get("General", "triggers").split(","))
+    subreddits = tuple(parser.get("General", "subreddits").split(","))
+    user_agent = "%s %s" % (summary, url)
 
-# Setup the subreddit watcher handler
-watcher_handler = SubredditWatcherHandler(self, username, password, triggers, subreddits, user_agent):
+    # Setup the subreddit watcher handler
+    watcher_handler = SubredditWatcherHandler(self, username, password, triggers, subreddits, user_agent):
 
-# Main loop
-while True:
-    watcher_handler.processSubreddits()
-    time.sleep(5)
+    # Main loop
+    while True:
+        watcher_handler.processSubreddits()
+        time.sleep(5)
