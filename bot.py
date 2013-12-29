@@ -57,7 +57,6 @@ while True:
         subreddit = r.get_subreddit(subreddit_name)
         print("Getting comments for subreddit: %s" % (subreddit_name))
         for submission in subreddit.get_comments():
-            print("Checking submission: %s" % (str(submission.id)))
             current_id = 0
             try:
                 if submission.id not in already_done:
