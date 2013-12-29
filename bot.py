@@ -112,4 +112,4 @@ while True:
                 already_done.append(current_id)
                 reply_usage(submission)
                 continue
-    time.sleep(30)
+    time.sleep(5)
