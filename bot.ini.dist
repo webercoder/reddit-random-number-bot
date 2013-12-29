@@ -1,0 +1,7 @@
+[General]
+url = https://github.com/weberwithoneb/reddit-random-number-bot
+summary = Random number generator by dogerandomnumber
+triggers = dogerandomnumber,/u/dogerandomnumber,+/u/dogerandomnumber
+subreddits = dogemarket,dogecoin,dogebetting
+reddit_username = username
+reddit_password = password

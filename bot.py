@@ -2,18 +2,12 @@
 import time
 import praw
 import sys
-import re
+from ConfigParser import SafeConfigParser
 import traceback
+import codecs
 from random import randint
 
-keywords = ("dogerandomnumber", "/u/dogerandomnumber", "+/u/dogerandomnumber")
-subreddits = ("dogemarket", "dogecoin")
-already_done = []
-
-r = praw.Reddit("Random number generator by /u/dogerandomnumber "
-                "https://gist.github.com/weberwithoneb/8165498")
-r.login("username", "password")
-
+# Reddit will sometimes give ratelimit errors. This will delay posting a comment until the wait time is over.
 def handle_ratelimit(func, *args, **kwargs):
     while True:
         try:
@@ -23,16 +17,37 @@ def handle_ratelimit(func, *args, **kwargs):
             print("Rate limit exceeded. Sleeping for %d seconds" % (error.sleep_time))
             time.sleep(error.sleep_time)
 
+# Get an integer from a specified upper or lower value.
 def num(val):
     try:
         return int(val)
     except ValueError:
         return 1
 
+# Post a reddit comment about proper usage when someone uses this bot incorrectly.
 def reply_usage(submission):
-    reply = "You may be doing something incorrectly. Please enter the following command to use this bot: \"%s x y\" (where x and y are integers)." % keywords[0]
+    reply = "You may be doing something incorrectly. Please enter the following command to use this bot: \"%s x y\" (where x and y are integers)." % triggers[0]
     handle_ratelimit(submission.reply, reply)
 
+# Parse config file
+parser = SafeConfigParser()
+with codecs.open("bot.ini", "r", encoding="utf-8") as f:
+    parser.readfp(f)
+url = parser.get("General", "url")
+summary = parser.get("General", "summary")
+username = parser.get("General", "reddit_username")
+password = parser.get("General", "reddit_password")
+triggers = tuple(parser.get("General", "triggers").split(","))
+subreddits = tuple(parser.get("General", "subreddits").split(","))
+
+# Setup reddit api object
+user_agent = "%s %s" % (summary, url)
+r = praw.Reddit(user_agent=user_agent)
+r.login(username, password)
+
+already_done = [] # keeps track of what comments have been seen so we don't repost comments
+
+# The main loop of the daemon, needs to be broken up.
 while True:
     for subreddit_name in subreddits:
         subreddit = r.get_subreddit(subreddit_name)
@@ -46,7 +61,7 @@ while True:
                     comment_text_lines = comment_text.split("\n")
                     results = []
                     for line in comment_text_lines:
-                        if line.startswith(keywords):
+                        if line.startswith(triggers):
                             current_id = submission.id
                             print("Found line, '%s'" % line)
                             try:
@@ -95,4 +110,3 @@ while True:
                 reply_usage(submission)
                 continue
     time.sleep(30)
-
