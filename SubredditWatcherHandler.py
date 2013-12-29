@@ -13,8 +13,8 @@ class SubredditWatcherHandler:
 
         self.subredditWatchers = []
         for subreddit_name in subreddits:
-            self.subredditWatchers.append(SubredditWatcher(subreddit_name), self.praw_reddit, triggers)
+            self.subreddit_watchers.append(SubredditWatcher(subreddit_name), self.praw_reddit, triggers)
 
     def processSubreddits(self):
-        for watcher in self.subredditWatchers:
+        for watcher in self.subreddit_watchers:
             watcher.watch()
