@@ -13,7 +13,7 @@ class SubredditWatcher:
         self.triggers = triggers
         self.username = username
         self.already_done = []
-        self.msg_parser = MessageParser(triggers, username)
+        self.msg_parser = MessageParser(triggers)
 
     def watch(self):
         subreddit = self.praw_reddit.get_subreddit(self.name)

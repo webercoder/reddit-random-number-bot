@@ -2,9 +2,13 @@ from random import SystemRandom
 
 class MessageParser:
     
-    def __init__(self, triggers, username):
-        self.triggers = triggers
-        self.username = username
+    def __init__(self, triggers=(), username=None):
+        if not username is None:
+            self.username = username
+            username_triggers = ("/u/%s" % self.username, "+/u/%s" % self.username)
+            self.triggers = triggers + username_triggers
+        else:
+            self.triggers = triggers
 
     def parse(self, msg):
         successes = []
@@ -22,8 +26,7 @@ class MessageParser:
 
     def parse_line(self, line):
         # No try statement is intentional, passes exceptions directly through to parent
-        username_mention = "/u/%s" % self.username;
-        if line.startswith(self.triggers) or line.startswith(username_mention):
+        if line.startswith(self.triggers):
             x,y = self.extract_numbers(line)
             randnum = self.so_random(x, y)
             return {'x': x, 'y': y, 'randnum': randnum}
