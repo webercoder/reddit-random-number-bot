@@ -21,6 +21,7 @@ class MessageParser:
         return {'successes':successes, 'failures':failures}
 
     def parse_line(self, line):
+        # No try statement is intentional, passes exceptions directly through to parent
         username_mention = "/u/%s" % self.username;
         if line.startswith(self.triggers) or line.startswith(username_mention):
             x,y = extract_numbers(line)
@@ -52,7 +53,7 @@ class MessageParser:
             xInt = yInt
             yInt = tmpInt
 
-        return x,y
+        return xInt,yInt
 
 
     # Get an integer from a specified upper or lower value.
