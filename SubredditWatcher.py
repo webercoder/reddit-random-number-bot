@@ -3,17 +3,18 @@ import reddit
 import util
 import traceback
 import sys
+from MessageParser import MessageParser
 
 class SubredditWatcher:
 
     MAX_ALREADY_DONE_LENGTH = 2000
 
-    def __init__(self, name, praw_reddit, triggers):
+    def __init__(self, name, praw_reddit, triggers, username):
         self.name = name
         self.praw_reddit = praw_reddit
         self.triggers = triggers
         self.already_done = []
-        self.msg_parser = MessageParser()
+        self.msg_parser = MessageParser(triggers, username)
 
     def watch(self):
         subreddit = self.praw_reddit.get_subreddit(self.name)
@@ -21,7 +22,7 @@ class SubredditWatcher:
         for submission in subreddit.get_comments():
             if submission.id not in self.already_done:
                 try:
-                    results = self.msg_parser(submission.body)
+                    results = self.msg_parser.parse(submission.body)
                     self.already_done.append(submission.id)
                     reply = self.get_reply(submission, results)
                     if not reply is None:
@@ -29,10 +30,10 @@ class SubredditWatcher:
                 except:
                     util.bot_stdout_print("Unknown exception: %s" % sys.exc_info()[0])
                     print traceback.format_exc()
-                    self.already_done.append(current_id)
+                    self.already_done.append(submission.id)
         self.cleanup_already_done()
 
-    def get_reply(self, results):
+    def get_reply(self, submission, results):
 
         if len(results.successes) > 0:
             sucess_msgs = []

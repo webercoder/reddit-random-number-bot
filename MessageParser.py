@@ -4,7 +4,7 @@ from random import SystemRandom
 
 class MessageParser:
     
-    def __init__(self, triggers):
+    def __init__(self, triggers, username):
         self.triggers = triggers
         self.username = username
 
