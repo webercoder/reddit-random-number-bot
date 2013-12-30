@@ -59,7 +59,7 @@ class MessageParser:
     def num(val):
         try:
             return int(val)
-        except ValueError:
+        except:
             return 1
 
     # Get a random number from the system. It must be within the specified bounds.
