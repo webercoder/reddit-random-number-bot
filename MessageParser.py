@@ -15,18 +15,20 @@ class MessageParser:
         msg_lines = msg.split("\n")
         for line in msg_lines:
             try:
-                successes.append(self.parse_line(line))
-            except e:
+                result = self.parse_line(line)
+                if not result is None:
+                    successes.append(result)
+            except Exception as e:
                 failures.append(str(e))
-        return {'successes':successes, 'failures':failures}
+        return successes,failures
 
     def parse_line(self, line):
         # No try statement is intentional, passes exceptions directly through to parent
         username_mention = "/u/%s" % self.username;
         if line.startswith(self.triggers) or line.startswith(username_mention):
-            x,y = extract_numbers(line)
+            x,y = self.extract_numbers(line)
             randnum = self.so_random(x, y)
-            return {'x':x, 'y':y, 'random':randnum}
+            return {'x': x, 'y': y, 'randnum': randnum}
 
     def extract_numbers(self, line):
         try:
@@ -55,14 +57,13 @@ class MessageParser:
 
         return xInt,yInt
 
-
     # Get an integer from a specified upper or lower value.
-    def num(val):
+    def num(self, val):
         try:
             return int(val)
         except:
             return 1
 
     # Get a random number from the system. It must be within the specified bounds.
-    def so_random(x, y):
+    def so_random(self, x, y):
         return SystemRandom().randint(x, y)

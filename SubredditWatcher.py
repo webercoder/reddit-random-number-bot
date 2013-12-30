@@ -13,6 +13,7 @@ class SubredditWatcher:
         self.name = name
         self.praw_reddit = praw_reddit
         self.triggers = triggers
+        self.username = username
         self.already_done = []
         self.msg_parser = MessageParser(triggers, username)
 
@@ -22,10 +23,12 @@ class SubredditWatcher:
         for submission in subreddit.get_comments():
             if submission.id not in self.already_done:
                 try:
-                    results = self.msg_parser.parse(submission.body)
+                    msg = submission.body
+                    successes,failures = self.msg_parser.parse(msg)
                     self.already_done.append(submission.id)
-                    reply = self.get_reply(submission, results)
+                    reply = self.get_reply(submission, successes, failures)
                     if not reply is None:
+                        util.bot_stdout_print("Reply to %s: %s\n" % (submission.id, reply))
                         reddit.handle_ratelimit(submission.reply, reply)
                 except:
                     util.bot_stdout_print("Unknown exception: %s" % sys.exc_info()[0])
@@ -33,18 +36,18 @@ class SubredditWatcher:
                     self.already_done.append(submission.id)
         self.cleanup_already_done()
 
-    def get_reply(self, submission, results):
+    def get_reply(self, submission, successes, failures):
 
-        if len(results.successes) > 0:
-            sucess_msgs = []
-            for result in results.successes:
-                sucess_msgs.append("Random integer between %d and %d is %d." % (result.x, result.y, result.random))
-            reply = "  \n".join(failure_messages)
+        if len(successes) > 0:
+            success_msgs = []
+            for result in successes:
+                success_msgs.append("Random integer between %d and %d is %d." % (result["x"], result["y"], result["randnum"]))
+            reply = "  \n".join(success_msgs)
             return reply
 
-        elif len(results.failures) > 0:
+        elif len(failures) > 0:
             failure_messages = []
-            for failure_msg in results.failures:
+            for failure_msg in failures:
                 failure_messages.append("* %s" % failure_msg)
             reply = "The following errors occurred:  \n  \n"
             reply += "  \n".join(failure_messages)
