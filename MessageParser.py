@@ -1,4 +1,3 @@
-import number
 import util
 from random import SystemRandom
 

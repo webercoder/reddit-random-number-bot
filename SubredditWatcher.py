@@ -1,4 +1,3 @@
-import number
 import reddit
 import util
 import traceback
