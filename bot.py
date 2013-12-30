@@ -37,8 +37,8 @@ def main():
         util.bot_stdout_print("Main loop started.")
         watcher_handler.process_subreddits()
         mentions_watcher.watch()
-        util.bot_stdout_print("Sleeping for 30 seconds.")
-        time.sleep(30) # Can't request the same page more than once every 30 seconds
+        util.bot_stdout_print("Sleeping for 3 seconds.")
+        time.sleep(3)
 
 if __name__ == "__main__":
     main()
