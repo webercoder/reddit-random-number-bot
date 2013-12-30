@@ -1,4 +1,3 @@
-import util
 from random import SystemRandom
 
 class MessageParser:
