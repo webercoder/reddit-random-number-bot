@@ -1,4 +1,3 @@
-import reddit
 import util
 import traceback
 import sys
@@ -28,7 +27,7 @@ class SubredditWatcher:
                     reply = self.get_reply(submission, successes, failures)
                     if not reply is None:
                         util.bot_stdout_print("Reply to %s: %s\n" % (submission.id, reply))
-                        reddit.handle_ratelimit(submission.reply, reply)
+                        util.handle_ratelimit(submission.reply, reply)
                 except:
                     util.bot_stdout_print("Unknown exception: %s" % sys.exc_info()[0])
                     print traceback.format_exc()

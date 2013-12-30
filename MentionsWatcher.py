@@ -1,5 +1,3 @@
-import reddit
-
 class MentionsWatcher:
 
     def __init__(self, praw_reddit):
